@@ -12,14 +12,83 @@ import {
   Grid,
   ButtonGroup,
 } from "@mui/material";
-import { styled, useTheme } from "@mui/material/styles";
-import SmartphoneIcon from "@mui/icons-material/Smartphone";
+import { useTheme } from "@mui/material/styles";
 import ButtonAppBar from "@/components/ButtonAppBar";
 import Iconify from "@/components/Iconify";
 
 interface StepProps {
   nextStep: () => void;
 }
+
+const ButtonStep = ({
+  icon,
+  title,
+  desc,
+  handle,
+}: {
+  icon: string;
+  title: string;
+  desc: string;
+  handle: (event: MouseEvent) => void;
+}) => {
+  const theme = useTheme();
+
+  return (
+    <Box
+      sx={{
+        cursor: "pointer",
+      }}
+      onClick={handle as any}
+    >
+      <Paper
+        sx={{
+          textAlign: "center",
+          backgroundColor: "#1A2027",
+          ...theme.typography.body2,
+          paddingY: theme.spacing(4),
+          color: theme.palette.text.primary,
+          height: 200,
+          "&:hover": {
+            backgroundColor: "#2C3643", // Cor que será aplicada ao passar o mouse
+
+            boxShadow: `
+                0 0 1px ${theme.palette.primary.dark},
+                0 0 5px ${theme.palette.primary.dark},
+                0 0 10px ${theme.palette.primary.dark},
+                0 0 13px ${theme.palette.primary.light},                                  
+                0 0 15px ${theme.palette.primary.main}
+                `,
+          },
+        }}
+      >
+        <Stack
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          spacing={1}
+        >
+          <Iconify
+            icon={icon}
+            color="primary"
+            sx={{
+              color: theme.palette.primary.main,
+              width: 40,
+              height: 40,
+            }}
+          />
+
+          <Typography variant="h6" component="h1">
+            {title}
+          </Typography>
+
+          <Typography variant="body2" component="h1">
+            {desc}
+          </Typography>
+        </Stack>
+      </Paper>
+    </Box>
+  );
+};
 
 function Step0({ nextStep }: StepProps) {
   const theme = useTheme();
@@ -37,16 +106,21 @@ function Step0({ nextStep }: StepProps) {
           image="/img/logo.png"
           alt="Picture of the logo"
           sx={{
-            width: "24%",
+            width: "30vh",
             height: "auto",
           }}
         />
 
-        <Typography variant="h4" component="h1">
+        <Typography variant="h4" component="h1" textAlign="center">
           Deixe a gente entender o que você precisa
         </Typography>
 
-        <Typography variant="h5" component="h2" color="error">
+        <Typography
+          variant="h5"
+          component="h2"
+          color="error"
+          textAlign="center"
+        >
           Não demora nem 2 minutinhos!
         </Typography>
 
@@ -59,8 +133,8 @@ function Step0({ nextStep }: StepProps) {
             color="primary"
             size="large"
             sx={{
-              borderRadius: 10,
               fontSize: "130%",
+              borderRadius: 10,
               textShadow: `
                 0 0 1px ${theme.palette.primary.dark},
                 0 0 5px ${theme.palette.primary.dark},
@@ -87,19 +161,6 @@ function Step0({ nextStep }: StepProps) {
 function Step1({ nextStep }: StepProps) {
   const theme = useTheme();
 
-  const Item = styled(Paper)(({ theme }) => ({
-    cursor: "pointer",
-    backgroundColor: "#1A2027",
-    ...theme.typography.body2,
-    paddingBlock: theme.spacing(7),
-    margin: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.primary,
-    "&:hover": {
-      backgroundColor: "#2C3643", // Cor que será aplicada ao passar o mouse
-    },
-  }));
-
   return (
     <Box maxHeight="lg">
       <Stack
@@ -111,6 +172,7 @@ function Step1({ nextStep }: StepProps) {
         <Typography
           variant="body1"
           component="h1"
+          textAlign="center"
           fontSize={{ xs: 14, sm: 14, md: 20 }}
         >
           São só algumas perguntas para que nossa equipe possa entrar em contato
@@ -119,6 +181,7 @@ function Step1({ nextStep }: StepProps) {
         <Typography
           variant="body1"
           component="h1"
+          textAlign="center"
           fontSize={{ xs: 14, sm: 14, md: 20 }}
         >
           Basta clicar no botão de casa opção ou arrastar a tela para baixo para
@@ -155,99 +218,47 @@ function Step1({ nextStep }: StepProps) {
 
       <Grid
         container
-        rowSpacing={1}
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        xs={12}
-        sm={12}
-        md={12}
+        spacing={2}
       >
-        <Grid xs={12} sm={6} md={3}>
-          <Item>
-            <Iconify
-              icon="fluent:phone-tablet-24-filled"
-              color="primary"
-              sx={{
-                color: theme.palette.primary.main,
-                width: 40,
-                height: 40,
-              }}
-            />
-
-            <Typography variant="h6" component="h1">
-              Aplicativo
-            </Typography>
-
-            <Typography variant="body2" component="h1">
-              Para você que precisa desenvolver algo para celulares
-            </Typography>
-          </Item>
+        <Grid item xs={12} sm={6} md={3}>
+          <ButtonStep
+            icon="fluent:phone-tablet-24-filled"
+            title="Aplicativo"
+            desc="Para você que precisa desenvolver algo para celulares"
+            handle={nextStep}
+          />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <Item>
-            <Iconify
-              icon="iconoir:laptop-dev-mode"
-              color="primary"
-              sx={{
-                color: theme.palette.primary.main,
-                width: 40,
-                height: 40,
-              }}
-            />
-
-            <Typography variant="h6" component="h1">
-              Software
-            </Typography>
-
-            <Typography variant="body2" component="h1">
-              Para você que precisa desenvolver um sistema local
-            </Typography>
-          </Item>
+        <Grid item xs={12} sm={6} md={3}>
+          <ButtonStep
+            icon="iconoir:laptop-dev-mode"
+            title="Software"
+            desc="Para você que precisa desenvolver um sistema local"
+            handle={nextStep}
+          />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <Item>
-            <Iconify
-              icon="mdi:web"
-              color="primary"
-              sx={{
-                color: theme.palette.primary.main,
-                width: 40,
-                height: 40,
-              }}
-            />
-
-            <Typography variant="h6" component="h1">
-              Website
-            </Typography>
-
-            <Typography variant="body2" component="h1">
-              Para você que precisa desenvolver um sistema de acesso remoto
-            </Typography>
-          </Item>
+        <Grid item xs={12} sm={6} md={3}>
+          <ButtonStep
+            icon="mdi:web"
+            title="Website"
+            desc="Para você que precisa desenvolver um sistema de acesso remoto"
+            handle={nextStep}
+          />
         </Grid>
 
-        <Grid xs={12} sm={6} md={3}>
-          <Item>
-            <Iconify
-              icon="pepicons-pencil:handshake"
-              color="primary"
-              sx={{
-                color: theme.palette.primary.main,
-                width: 40,
-                height: 40,
-              }}
-            />
-
-            <Typography variant="h6" component="h1">
-              Terceirização
-            </Typography>
-
-            <Typography variant="body2" component="h1">
-              Para você que precisa sempre desenvolver e quer uma equipe
-              especializada
-            </Typography>
-          </Item>
+        <Grid item xs={12} sm={6} md={3}>
+          <ButtonStep
+            icon="pepicons-pencil:handshake"
+            title="Terceirização"
+            desc="Para você que precisa sempre desenvolver e quer uma equipe
+            especializada"
+            handle={nextStep}
+          />
         </Grid>
       </Grid>
     </Box>
@@ -276,7 +287,7 @@ export default function Home() {
           justifyContent="center"
           alignItems="center"
           spacing={2}
-          padding={{ xs: 5, sm: 5, md: StepPadding }}
+          paddingY={{ xs: 5, sm: 5, md: StepPadding }}
           maxHeight="lg"
         >
           {step === 0 && <Step0 nextStep={handleNextStep} />}
