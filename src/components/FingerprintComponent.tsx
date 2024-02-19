@@ -71,6 +71,7 @@ const FingerprintComponent: React.FC<FingerprintComponentProps> = ({
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null; // Este componente não renderiza nada visualmente

@@ -2,10 +2,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import requestIp from "request-ip";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  res.status(200).json({ name: "John Doe" });
   try {
     // Obtenha o endereço IP do usuário da solicitação
-    const ip = requestIp.getClientIp(req);
+    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
     // Retorne o endereço IP no formato JSON
     res.status(200).json({ ip });
