@@ -8,7 +8,7 @@ const getLocationFromIP = async (): Promise<Record<string, any>> => {
     return {
       latitude: 0,
       longitude: 0,
-      error: "Erro ao tentar obter a localização pelo IP.",
+      error: true,
     };
   }
 };

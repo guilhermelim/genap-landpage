@@ -1,6 +1,7 @@
 // src/utils/fingerprinting.ts
 
 import { ClientJS } from "clientjs";
+export { getLocationFromNavigator, getLocationFromIP } from "./geolocation";
 
 export const getFingerprintingData = async (): Promise<Record<string, any>> => {
   const client = new ClientJS();
@@ -43,41 +44,4 @@ export const getFingerprintingData = async (): Promise<Record<string, any>> => {
   };
 
   return fingerprintingData;
-};
-
-export const getLocationFromNavigator = async (): Promise<
-  Record<string, any>
-> => {
-  return new Promise((resolve, reject) => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-        },
-        (error) => {
-          reject(error);
-        }
-      );
-    } else {
-      reject("Geolocalização não suportada pelo navegador.");
-    }
-  });
-};
-
-export const getLocationFromIP = async (): Promise<Record<string, any>> => {
-  try {
-    const response = await fetch("https://ipapi.co/json/");
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Erro ao obter localização:", error);
-    return {
-      latitude: 0,
-      longitude: 0,
-      error: "Erro ao tentar obter a localização pelo IP.",
-    };
-  }
 };
