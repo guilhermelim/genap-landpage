@@ -11,9 +11,9 @@ import { LoadingButton } from "@mui/lab";
 import { useTheme } from "@mui/material/styles";
 
 const defaultValues = {
-  fullName: "Guilherme Lima",
-  phone: "85992704305",
-  email: "guilhermem.lima@outlook.com",
+  fullName: "",
+  phone: "",
+  email: "",
   ideaDescription: "",
   startProjectDescription: "",
   companySize: "1 a 10",
