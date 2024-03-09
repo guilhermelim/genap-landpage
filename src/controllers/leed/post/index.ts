@@ -21,7 +21,7 @@ export default async function createLeed(
 
     await newLeeds.save();
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Lead criado com sucesso.",
       date: newLeeds,
     });

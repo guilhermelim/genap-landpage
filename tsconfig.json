@@ -17,16 +17,19 @@
     "paths": {
       "@/root/*": ["${__dirname}/../*"],
       "@/src/*": ["src/*"],
-      "@/theme/*": ["src/theme/*"],
-      "@/components/*": ["src/components/*"],
       "@/animation/*": ["src/animation/*"],
-      "@/models/*": ["src/models/*"],
+      "@/components/*": ["src/components/*"],
       "@/controllers/*": ["src/controllers/*"],
+      "@/hooks/*": ["src/hooks/*"],
+      "@/models/*": ["src/models/*"],
       "@/services/*": ["src/services/*"],
-      "@/middleware/*": ["src/middleware/*"],
+      "@/theme/*": ["src/theme/*"],
       "@/utils/*": ["src/utils/*"],
+      "@/decorators/*": ["src/decorators/*"],
+      "@/middleware/*": ["src/middleware/*"],
       "@/layouts/*": ["src/layouts/*"]
-    }
+    },
+    "experimentalDecorators": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

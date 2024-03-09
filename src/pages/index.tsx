@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter, NextRouter } from "next/router";
 import Confetti from "react-confetti";
 import { Container, Box } from "@mui/material";
 import ButtonAppBar from "@/components/ButtonAppBar";
 import { Step, StepLayout } from "@/root/src/components/Step";
 import { Step0, Step7, Step8 } from "../sections/steps";
 import FingerprintComponent from "@/components/FingerprintComponent"; // Importando o componente
+import { createLeed, updateLeed } from "@/services/leed.service";
+import hasDifference from "@/utils/hasDifference";
+import usePersistentState from "@/hooks/usePersistentState";
 
 export default function Home() {
   const router = useRouter();
   const [step, setStep] = useState<number>(0);
-  const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
 
+  const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
   const [queryParams, setQueryParams] = useState<any>({});
 
+  const [id, setId] = usePersistentState("id", null, 1000 * 60 * 60 * 24);
+
   const [leed, setLeed] = useState<any>({});
-  const [fingerprintData, setFingerprintData] = useState<any>(null); // State para armazenar os dados de impressão digital
+
+  const [fingerprintData, setFingerprintData] = useState<any>(); // State para armazenar os dados de impressão digital
 
   const StepConditionRenderer = ({
     condition,
@@ -73,24 +79,99 @@ export default function Home() {
     setStep((prevStep) => prevStep + 1);
   };
 
-  useEffect(() => {
+  const updateLeedHelper = (
+    queryParams: any,
+    selectedOptions: any,
+    fingerprintData: any
+  ) => {
     const newLeed = {
       queryParams,
       selectedOptions,
       fingerprinting: fingerprintData,
     };
 
-    setLeed(newLeed);
-  }, [selectedOptions, queryParams, fingerprintData]);
+    if (hasDifference(leed, newLeed)) {
+      setLeed(newLeed);
+    }
+  };
 
-  useEffect(() => {
-    console.log("leed: ", leed);
-  }, [leed]);
-
-  useEffect(() => {
+  const updateQueryParamsHelper = (router: NextRouter) => {
     const params = router.query;
     setQueryParams(params);
-  }, [router.query]);
+  };
+
+  const detectLeedChangesHelper = (leed: any): boolean => {
+    const hasNonEmptyLeed = () => {
+      return (
+        Object.keys(leed).length !== 0 &&
+        ((leed.fingerprinting !== null && leed.fingerprinting !== undefined) ||
+          Object.values(leed.queryParams).length > 0 ||
+          leed.selectedOptions.length > 0)
+      );
+    };
+
+    return hasNonEmptyLeed();
+  };
+
+  const createAndUpdateLeed = async (leed: any) => {
+    const create = async (leed: any): Promise<boolean> => {
+      try {
+        const response = await createLeed(leed);
+        if (response.status === 200) {
+          setId(response.data.date._id);
+          console.log("API: ", response.data.message);
+          return true;
+        } else {
+          console.error("Erro ao criar o lead:", response.data.error);
+          return false;
+        }
+      } catch (error) {
+        console.error("Erro ao processar a requisição:", error);
+        return false;
+      }
+    };
+
+    const update = async (id: string, leed: any): Promise<boolean> => {
+      try {
+        const response = await updateLeed(id, leed);
+        if (response.status === 200) {
+          console.log("API: ", response.data.message);
+          return true;
+        } else {
+          console.error("Erro ao atualizar o lead:", response.data.error);
+          return false;
+        }
+      } catch (error) {
+        console.error("Erro ao processar a requisição:", error);
+        return false;
+      }
+    };
+
+    if (id) {
+      const updateSuccess = await update(id, leed);
+      if (!updateSuccess) {
+        await create(leed);
+      }
+    } else {
+      await create(leed);
+    }
+  };
+
+  useEffect(() => {
+    updateLeedHelper(queryParams, selectedOptions, fingerprintData);
+    updateQueryParamsHelper(router);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryParams, selectedOptions, fingerprintData, router.query]);
+
+  useEffect(() => {
+    if (detectLeedChangesHelper(leed)) {
+      console.log("leed atualizado:", leed);
+      (async () => {
+        await createAndUpdateLeed(leed);
+      })();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leed]);
 
   return (
     <>
