@@ -215,7 +215,7 @@ export default function Home() {
                 name="O que você precisa?"
                 index={1}
                 ask="O que {você} precisa?"
-                explain="São só algumas perguntas para que nossa equipe possa entrar em contato com você!\nBasta clicar no botão de casa opção ou arrastar a tela para baixo para mais opções."
+                explain="São só algumas perguntas para que nossa equipe possa entrar em contato com você!\nBasta clicar no botão de cada opção."
                 options={[
                   {
                     value: "Aplicativo",
