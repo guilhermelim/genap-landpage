@@ -28,10 +28,12 @@ const validationSchema = yup.object({
   companySize: yup.string().required("Número de colaboradores é obrigatório"),
 });
 
-export default function Step7({
+export default function StepForm({
   nextStep,
+  index,
 }: {
   nextStep: (value: any) => void;
+  index: number;
 }) {
   const theme = useTheme();
 
@@ -54,7 +56,7 @@ export default function Step7({
 
   const handleClick = (value: any) => {
     const stepValue = {
-      index: 7,
+      index: index,
       name: "Formulário",
       value: value,
     };
@@ -87,7 +89,7 @@ export default function Step7({
             fontSize={{ xs: 35, sm: 35, md: 50 }}
             align="center"
           >
-            Você possui mais algum
+            Você possui mais algum{" "}
             <Box
               sx={{ display: "inline", color: theme.palette.primary.main }}
               color="error"

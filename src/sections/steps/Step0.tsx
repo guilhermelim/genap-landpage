@@ -36,7 +36,7 @@ export default function Step0({
         />
 
         <Typography variant="h4" component="h1" textAlign="center">
-          Deixe a gente entender o que você precisa
+          Deixe-nos entender suas necessidades
         </Typography>
 
         <Typography
@@ -45,7 +45,7 @@ export default function Step0({
           color="error"
           textAlign="center"
         >
-          Não demora nem 2 minutinhos!
+          Levará apenas 2 minutos!
         </Typography>
 
         <Box sx={{ pt: 2, maxWidth: "mg" }}>

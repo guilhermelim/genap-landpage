@@ -3,10 +3,12 @@ import { Stack, Box, Typography, Button, Fab } from "@mui/material";
 
 export default function StepLayout({
   step,
+  numberOfSteps,
   setStep,
   children,
 }: {
   step: number;
+  numberOfSteps: number;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   children: React.ReactNode;
 }) {
@@ -46,7 +48,9 @@ export default function StepLayout({
             },
           }}
         >
-          <Typography component="h4">{step}/6</Typography>
+          <Typography component="h4">
+            {step}/{numberOfSteps}
+          </Typography>
         </Fab>
       )}
 

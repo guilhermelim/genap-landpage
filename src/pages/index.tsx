@@ -4,7 +4,7 @@ import Confetti from "react-confetti";
 import { Container, Box } from "@mui/material";
 import ButtonAppBar from "@/components/ButtonAppBar";
 import { Step, StepLayout } from "@/root/src/components/Step";
-import { Step0, Step7, Step8 } from "../sections/steps";
+import { Step0, StepForm, StepCompleted } from "../sections/steps";
 import FingerprintComponent from "@/components/FingerprintComponent"; // Importando o componente
 import { createLeed, updateLeed } from "@/services/leed.service";
 import hasDifference from "@/utils/hasDifference";
@@ -13,6 +13,8 @@ import usePersistentState from "@/hooks/usePersistentState";
 export default function Home() {
   const router = useRouter();
   const [step, setStep] = useState<number>(0);
+  const [numberOfSteps, setNumberOfSteps] = useState<number>(5);
+  const [indexIncrement, setIndexIncrement] = useState<number>(0);
 
   const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
   const [queryParams, setQueryParams] = useState<any>({});
@@ -33,6 +35,7 @@ export default function Home() {
       index?: number;
       value?: string;
       notEqualValueCheck?: boolean;
+      onConditionSatisfied?: () => void;
     };
     children: React.ReactNode;
   }) => {
@@ -49,14 +52,17 @@ export default function Home() {
             : option.value === condition.value)
       );
 
-    return (
-      <>
-        {isStepSatisfied &&
-          (!isValueConditionProvided || isValueConditionSatisfied) && (
-            <>{children}</>
-          )}
-      </>
-    );
+    const SatisfiedCondition =
+      isStepSatisfied &&
+      (!isValueConditionProvided || isValueConditionSatisfied);
+
+    React.useEffect(() => {
+      if (SatisfiedCondition && condition.onConditionSatisfied) {
+        condition.onConditionSatisfied();
+      }
+    }, [SatisfiedCondition, condition, condition?.onConditionSatisfied]);
+
+    return <>{SatisfiedCondition && <>{children}</>}</>;
   };
 
   const handleOptionSelection = (value: any) => {
@@ -176,24 +182,35 @@ export default function Home() {
 
   return (
     <>
-      {step === 8 && (
-        <Confetti
-          recycle={false}
-          numberOfPieces={2_000}
-          tweenDuration={20000}
-        />
-      )}
       <Box>
+        {step === 6 + indexIncrement && (
+          <Confetti
+            recycle={false}
+            numberOfPieces={2_000}
+            tweenDuration={20000}
+          />
+        )}{" "}
         <FingerprintComponent setFingerprintData={setFingerprintData} />
-
         <ButtonAppBar />
         <Container component="main" maxWidth="xl">
-          <StepLayout step={step} setStep={setStep}>
-            <StepConditionRenderer condition={{ step: 0 }}>
+          <StepLayout
+            step={step}
+            setStep={setStep}
+            numberOfSteps={numberOfSteps}
+          >
+            <StepConditionRenderer
+              condition={{
+                step: 0,
+              }}
+            >
               <Step0 nextStep={handleNextStep} />
             </StepConditionRenderer>
 
-            <StepConditionRenderer condition={{ step: 1 }}>
+            <StepConditionRenderer
+              condition={{
+                step: 1,
+              }}
+            >
               <Step
                 name="O que você precisa?"
                 index={1}
@@ -204,57 +221,25 @@ export default function Home() {
                     value: "Aplicativo",
                     icon: "fluent:phone-tablet-24-filled",
                     title: "Aplicativo",
-                    desc: "Para você que precisa desenvolver algo para celulares",
+                    desc: "Para desenvolvimento de soluções para dispositivos móveis.",
                   },
                   {
                     value: "Software",
                     icon: "iconoir:laptop-dev-mode",
                     title: "Software",
-                    desc: "Para você que precisa desenvolver um sistema local",
+                    desc: "Para desenvolvimento de sistemas locais",
                   },
                   {
                     value: "Website",
                     icon: "mdi:web",
                     title: "Website",
-                    desc: "Para você que precisa desenvolver um sistema de acesso remoto",
+                    desc: "Para desenvolvimento de sistemas de acesso remoto.",
                   },
                   {
-                    value: "Terceirização",
+                    value: "Não tenho certeza",
                     icon: "pepicons-pencil:handshake",
-                    title: "Terceirização",
-                    desc: "Para você que precisa sempre desenvolver e quer uma equipe especializada",
-                  },
-                ]}
-                handleOnClick={handleNextStep}
-              />
-            </StepConditionRenderer>
-
-            <StepConditionRenderer
-              condition={{ step: 2, index: 1, value: "Aplicativo" }}
-            >
-              <Step
-                name="Qual é a plataforma do Aplicativo?"
-                index={2}
-                ask="O que {você} precisa?"
-                explain="São só algumas perguntas para que nossa equipe possa entrar em contato com você!"
-                options={[
-                  {
-                    value: "Android",
-                    icon: "uiw:android",
-                    title: "Android",
-                    desc: "Android já possui quase 75% dos usuários no mundo",
-                  },
-                  {
-                    value: "iOS",
-                    icon: "bi:apple",
-                    title: "iOS",
-                    desc: "iOS é conhecido por ser mais seguro e ter usuários mais fiéis",
-                  },
-                  {
-                    value: "Multiplataforma",
-                    icon: "pepicons-print:smartphone-cutout",
-                    title: "Multiplataforma",
-                    desc: "Por que não segurança e acessibilidade?",
+                    title: "Não tenho certeza",
+                    desc: "Se você ainda está decidindo qual plataforma usar.",
                   },
                 ]}
                 handleOnClick={handleNextStep}
@@ -267,46 +252,65 @@ export default function Home() {
                 index: 1,
                 value: "Aplicativo",
                 notEqualValueCheck: true,
+                onConditionSatisfied: () => {
+                  setNumberOfSteps(5);
+                  setIndexIncrement(0);
+                },
               }}
             >
-              <Step
-                name="Login"
-                index={2}
-                ask="Caso exista, como você quer que os
-              usuários de sua plataforma {efetuem seu login}?"
-                explain="Agora vamos entender como irá funcionar, ok?"
-                options={[
-                  {
-                    value: "Login por E-mail",
-                    icon: "ic:baseline-email",
-                    title: "Login por E-mail",
-                    desc: "Um sistema mais simples, porém efetivo",
-                  },
-                  {
-                    value: "Nenhum",
-                    icon: "material-symbols:block",
-                    title: "Nenhum",
-                    desc: "Acho que não vai precisar de login",
-                  },
-                  {
-                    value: "Não Sei",
-                    icon: "ph:question",
-                    title: "Não Sei",
-                    desc: "Gostaria de uma recomendação sobre essa etapa.",
-                  },
-                ]}
-                handleOnClick={handleNextStep}
-              />
+              <></>
             </StepConditionRenderer>
 
             <StepConditionRenderer
               condition={{
-                step: 3,
+                step: 2,
+                index: 1,
+                value: "Aplicativo",
+                onConditionSatisfied: () => {
+                  setNumberOfSteps(6);
+                  setIndexIncrement(1);
+                },
+              }}
+            >
+              <>
+                <Step
+                  name="Qual é a plataforma do Aplicativo?"
+                  index={2}
+                  ask="O que {você} precisa?"
+                  explain="São só algumas perguntas para que nossa equipe possa entrar em contato com você!"
+                  options={[
+                    {
+                      value: "Android",
+                      icon: "uiw:android",
+                      title: "Android",
+                      desc: "Possui quase 75% dos usuários no mundo.",
+                    },
+                    {
+                      value: "iOS",
+                      icon: "bi:apple",
+                      title: "iOS",
+                      desc: "Conhecido por sua segurança e base de usuários fiéis.",
+                    },
+                    {
+                      value: "Multiplataforma",
+                      icon: "pepicons-print:smartphone-cutout",
+                      title: "Multiplataforma",
+                      desc: "Priorize segurança e acessibilidade.",
+                    },
+                  ]}
+                  handleOnClick={handleNextStep}
+                />
+              </>
+            </StepConditionRenderer>
+
+            <StepConditionRenderer
+              condition={{
+                step: 2 + indexIncrement,
               }}
             >
               <Step
-                name="Vai ser integrado com outro sistema?"
-                index={3}
+                name="Seu projeto será integrado a algum outro sistema?"
+                index={2 + indexIncrement}
                 ask="Seu projeto será {integrado} a algum outro sistema?"
                 explain="Agora vamos entender como irá funcionar, ok?"
                 options={[
@@ -335,47 +339,31 @@ export default function Home() {
 
             <StepConditionRenderer
               condition={{
-                step: 4,
+                step: 3 + indexIncrement,
               }}
             >
               <Step
-                name="Qual nível o projeto está?"
-                index={4}
-                ask="Qual {nível} o projeto está?"
+                name="QQual é o estágio atual do seu projeto?"
+                index={3 + indexIncrement}
+                ask="Qual é o {estágio} atual do seu projeto?"
                 explain="Agora vamos entender como irá funcionar, ok?"
                 options={[
                   {
-                    value: "Possuo a ideia, porém não tenho o detalhamento.",
-                    icon: "",
-                    title: "Possuo a ideia, porém não tenho o detalhamento.",
+                    value: "Tenho apenas uma ideia.",
+                    icon: "el:idea-alt",
+                    title: "Tenho apenas uma ideia.",
                     desc: "",
                   },
                   {
-                    value:
-                      "Já possuo um descritivo e gostaria de receber um orçamento.",
-                    icon: "",
-                    title:
-                      "Já possuo um descritivo e gostaria de receber um orçamento.",
+                    value: "Já tenho o escopo do que preciso.",
+                    icon: "f7:scope",
+                    title: "Já tenho o escopo do que preciso.",
                     desc: "",
                   },
                   {
-                    value: "Já comecei o desenvolvimento.",
-                    icon: "",
-                    title: "Já comecei o desenvolvimento.",
-                    desc: "",
-                  },
-                  {
-                    value:
-                      "Procuro terceirizar minha equipe de desenvolvimento",
-                    icon: "",
-                    title:
-                      "Procuro terceirizar minha equipe de desenvolvimento",
-                    desc: "",
-                  },
-                  {
-                    value: "Procuro uma equipe de sustentação",
-                    icon: "",
-                    title: "Procuro uma equipe de sustentação",
+                    value: "Procuro uma Consultoria.",
+                    icon: "game-icons:team-idea",
+                    title: "Procuro uma Consultoria.",
                     desc: "",
                   },
                 ]}
@@ -385,43 +373,25 @@ export default function Home() {
 
             <StepConditionRenderer
               condition={{
-                step: 5,
+                step: 4 + indexIncrement,
               }}
             >
               <Step
                 name="E qual seria a urgência do projeto?"
-                index={5}
+                index={4 + indexIncrement}
                 ask="E qual seria a {urgência} do projeto?"
                 explain="Agora vamos entender como irá funcionar, ok?"
                 options={[
                   {
-                    value: "Quero começar a desenvolver ainda essa semana",
-                    icon: "",
-                    title: "Quero começar a desenvolver ainda essa semana",
+                    value: "Quero começar logo!",
+                    icon: "ant-design:alert-filled",
+                    title: "Quero começar logo!",
                     desc: "",
                   },
                   {
-                    value: "Quero começar a desenvolver na próxima semana",
-                    icon: "",
-                    title: "Quero começar a desenvolver na próxima semana",
-                    desc: "",
-                  },
-                  {
-                    value: "Quero começar a desenvolver ainda esse mês",
-                    icon: "",
-                    title: "Quero começar a desenvolver ainda esse mês",
-                    desc: "",
-                  },
-                  {
-                    value: "Quero começar a desenvolver no próximo mês",
-                    icon: "",
-                    title: "Quero começar a desenvolver no próximo mês",
-                    desc: "",
-                  },
-                  {
-                    value: "Não tenho urgência para desenvolver o projeto",
-                    icon: "",
-                    title: "Não tenho urgência para desenvolver o projeto",
+                    value: "Não tenho muita presa",
+                    icon: "material-symbols:quiet-time",
+                    title: "Não tenho muita presa",
                     desc: "",
                   },
                 ]}
@@ -429,70 +399,15 @@ export default function Home() {
               />
             </StepConditionRenderer>
 
-            <StepConditionRenderer
-              condition={{
-                step: 6,
-              }}
-            >
-              <Step
-                name="Por onde você nos conheceu?"
-                index={6}
-                ask="Por onde você nos {conheceu}?"
-                explain="Agora vamos entender como irá funcionar, ok?"
-                options={[
-                  {
-                    value: "Google",
-                    icon: "",
-                    title: "Google",
-                    desc: "",
-                  },
-                  {
-                    value: "Instagram",
-                    icon: "",
-                    title: "Instagram",
-                    desc: "",
-                  },
-                  {
-                    value: "Facebook",
-                    icon: "",
-                    title: "Facebook",
-                    desc: "",
-                  },
-                  {
-                    value: "LinkedIn",
-                    icon: "",
-                    title: "LinkedIn",
-                    desc: "",
-                  },
-                  {
-                    value: "Indicação",
-                    icon: "",
-                    title: "Indicação",
-                    desc: "",
-                  },
-                  {
-                    value: "Plataforma de contratação",
-                    icon: "",
-                    title: "Plataforma de contratação",
-                    desc: "",
-                  },
-                  {
-                    value: "Outro",
-                    icon: "",
-                    title: "Outro",
-                    desc: "",
-                  },
-                ]}
-                handleOnClick={handleNextStep}
+            <StepConditionRenderer condition={{ step: 5 + indexIncrement }}>
+              <StepForm nextStep={handleNextStep} index={5 + indexIncrement} />
+            </StepConditionRenderer>
+
+            <StepConditionRenderer condition={{ step: 6 + indexIncrement }}>
+              <StepCompleted
+                nextStep={handleNextStep}
+                index={6 + indexIncrement}
               />
-            </StepConditionRenderer>
-
-            <StepConditionRenderer condition={{ step: 7 }}>
-              <Step7 nextStep={handleNextStep} />
-            </StepConditionRenderer>
-
-            <StepConditionRenderer condition={{ step: 8 }}>
-              <Step8 nextStep={handleNextStep} />
             </StepConditionRenderer>
           </StepLayout>
         </Container>

@@ -2,16 +2,18 @@ import { Stack, Box, Typography, CardMedia, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Iconify from "@/components/Iconify";
 
-export default function Step8({
+export default function StepCompleted({
   nextStep,
+  index,
 }: {
   nextStep: (value: any) => void;
+  index: number;
 }) {
   const theme = useTheme();
 
   const handleClick = (value: any) => {
     const stepValue = {
-      index: 8,
+      index: index,
       name: "Nos Conheça",
       value: value,
     };
@@ -20,6 +22,7 @@ export default function Step8({
 
   return (
     <Box>
+      {" "}
       <Box maxHeight="lg">
         <Stack
           direction="column"
@@ -68,8 +71,30 @@ export default function Step8({
           </Typography>
         </Stack>
       </Box>
-
-      <Stack
+      <Typography
+        variant="h3"
+        component="h1"
+        fontSize={{ xs: 17.5, sm: 17.5, md: 50 }}
+        align="center"
+      >
+        Nossa equipe entrará em contato em breve para{" "}
+        <Box
+          sx={{ display: "inline", color: theme.palette.primary.main }}
+          color="error"
+        >
+          agendarmos
+        </Box>{" "}
+        uma reunião dentro das próximas{" "}
+        <Box
+          sx={{ display: "inline", color: theme.palette.primary.main }}
+          color="error"
+        >
+          24 horas
+        </Box>
+        .
+      </Typography>
+      <Typography sx={{ py: 2 }} component="h1" textAlign="center"></Typography>
+      {/* <Stack
         direction="row"
         justifyContent="center"
         alignItems="stretch"
@@ -93,9 +118,7 @@ export default function Step8({
         >
           Veja nossa vasta gama de projetos entregues!
         </Button>
-        {/* <Button variant="contained">
-          Conheça nosso propósito e um pouco de nossa história!
-        </Button> */}
+
         <Button
           variant="contained"
           sx={{ backgroundColor: "green" }}
@@ -115,7 +138,7 @@ export default function Step8({
           <br />
           Entre em contato conosco via WhatsApp!
         </Button>
-      </Stack>
+      </Stack> */}
     </Box>
   );
 }

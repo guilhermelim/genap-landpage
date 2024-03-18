@@ -29,17 +29,21 @@ export default function ButtonStep({
       }}
       onClick={handleClick}
     >
-      <Paper
+      <Stack
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+        spacing={0}
         sx={{
-          textAlign: "center",
-          backgroundColor: "#1A2027",
+          backgroundColor: "#262b32",
           ...theme.typography.body2,
-          paddingY: theme.spacing(4),
+          boxShadow: "3px 5px 10px rgba(0, 0, 0, 0.6)", // Exemplo de sombra
+          borderRadius: 2,
           color: theme.palette.text.primary,
-          height: 200,
+          minHeight: 150,
+          maxHeight: 150,
           "&:hover": {
-            backgroundColor: "#2C3643", // Cor que será aplicada ao passar o mouse
-
+            backgroundColor: "#2C3643",
             boxShadow: `
                 0 0 1px ${theme.palette.primary.dark},
                 0 0 5px ${theme.palette.primary.dark},
@@ -55,6 +59,7 @@ export default function ButtonStep({
           justifyContent="center"
           alignItems="center"
           spacing={1}
+          sx={{ padding: 1 }}
         >
           <Iconify
             icon={icon}
@@ -66,15 +71,15 @@ export default function ButtonStep({
             }}
           />
 
-          <Typography variant="h6" component="h1">
+          <Typography variant="h6" component="h1" align="center">
             {title}
           </Typography>
 
-          <Typography variant="body2" component="h1">
+          <Typography variant="body2" component="h1" align="center">
             {desc}
           </Typography>
         </Stack>
-      </Paper>
+      </Stack>
     </Box>
   );
 }
