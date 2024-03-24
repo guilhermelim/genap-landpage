@@ -19,8 +19,8 @@ export default function Home() {
   const [selectedOptions, setSelectedOptions] = useState<any[]>([]);
   const [queryParams, setQueryParams] = useState<any>({});
 
-  const [id, setId] = useState(null);
-  // const [id, setId] = usePersistentState("id", null, 1000 * 60 * 60 * 24);
+  // const [id, setId] = useState(null);
+  const [id, setId] = usePersistentState("id", null, 1000 * 20); // 20 seconds
 
   const [leed, setLeed] = useState<any>({});
 
