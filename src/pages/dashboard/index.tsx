@@ -190,31 +190,37 @@ function AuthorizedPage() {
               Não há leads cadastrados.
             </Typography>
           ) : (
-            <Grid
-              container
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              spacing={2}
-            >
-              {leedsList
-                .sort((a, b) => {
-                  const dateA = new Date(a.updatedAt).getTime();
-                  const dateB = new Date(b.updatedAt).getTime();
-                  return dateB - dateA; // Ordena do mais recente para o mais antigo
-                })
-                .map((leed, index) => (
-                  <Grid item key={leed._id} xs={12} sm={6} md={3}>
-                    <LeedCard
-                      leed={leed}
-                      isNew={isNewLead(leed)} // Passa o valor de isNew para o LeedCard
-                      isUpdated={isUpdatedLead(leed)} // Passa o valor de isUpdated para o LeedCard
-                      key={leed._id}
-                      onDelete={() => removeLeed(leed._id)}
-                    />
-                  </Grid>
-                ))}
-            </Grid>
+            <Box>
+              <Typography variant="h6" component="p" mt={3} mb={2}>
+                Número de Leeds: {leedsList.length}
+              </Typography>
+
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                {leedsList
+                  .sort((a, b) => {
+                    const dateA = new Date(a.updatedAt).getTime();
+                    const dateB = new Date(b.updatedAt).getTime();
+                    return dateB - dateA; // Ordena do mais recente para o mais antigo
+                  })
+                  .map((leed, index) => (
+                    <Grid item key={leed._id} xs={12} sm={6} md={3}>
+                      <LeedCard
+                        leed={leed}
+                        isNew={isNewLead(leed)} // Passa o valor de isNew para o LeedCard
+                        isUpdated={isUpdatedLead(leed)} // Passa o valor de isUpdated para o LeedCard
+                        key={leed._id}
+                        onDelete={() => removeLeed(leed._id)}
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
+            </Box>
           )}
         </Stack>
       </Container>
