@@ -343,7 +343,7 @@ export default function Home() {
               }}
             >
               <Step
-                name="QQual é o estágio atual do seu projeto?"
+                name="Qual é o estágio atual do seu projeto?"
                 index={3 + indexIncrement}
                 ask="Qual é o {estágio} atual do seu projeto?"
                 explain="Agora vamos entender como irá funcionar, ok?"

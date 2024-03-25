@@ -13,32 +13,20 @@ export default async function getLeed(
 
     const { id } = req.query;
 
-    if (!id) {
-      return res
-        .status(400)
-        .json({ message: "ID não fornecido na solicitação" });
-    }
-
-    if (id) {
-      if (!isValidObjectId(id as string)) {
-        return res.status(400).json({ message: "ID inválido" });
-      }
-
+    // Se um ID for fornecido, obtenha o lead correspondente.
+    if (id && isValidObjectId(id as string)) {
       const singleData = await LeedsModel.findById(id);
-
       if (!singleData) {
         return res.status(404).json({ message: "Lead não encontrado" });
       }
-
       return res.status(200).json(singleData);
     }
 
+    // Se nenhum ID for fornecido, obtenha todos os leads.
     const allData = await LeedsModel.find();
-
     if (allData.length === 0) {
       return res.status(404).json({ message: "Nenhum lead cadastrado" });
     }
-
     return res.status(200).json(allData);
   } catch (error) {
     console.error(error);

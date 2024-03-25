@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "@/utils/axios";
 
 // Função para recuperar todos os leeds
-export async function fetchLeeds(): Promise<AxiosResponse<any>> {
+export async function getLeeds(): Promise<AxiosResponse<any>> {
   return axios.get("/leed");
 }
 
@@ -22,5 +22,5 @@ export async function updateLeed(
 
 // Função para excluir um leed
 export async function deleteLeed(id: string): Promise<AxiosResponse<any>> {
-  return axios.delete(`/leed/${id}`);
+  return axios.delete(`/leed?id=${id}`);
 }
