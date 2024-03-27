@@ -1,4 +1,13 @@
-import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  FormControlLabel,
+  Grid,
+  Stack,
+  Switch,
+  Typography,
+} from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useSnackbar } from "notistack";
 import { useState, useEffect } from "react";
@@ -37,17 +46,57 @@ function RestrictedPage() {
   );
 }
 
+interface ListAllProps {
+  leedsList: any[]; // Assuming leedsList is an array of leeds
+  isNewLead: (lead: any) => boolean;
+  isUpdatedLead: (lead: any) => boolean;
+  removeLeed: (id: string) => void;
+}
+
+function ListAll({
+  leedsList,
+  isNewLead,
+  isUpdatedLead,
+  removeLeed,
+}: ListAllProps) {
+  return (
+    <>
+      {leedsList
+        .sort((a, b) => {
+          const dateA = new Date(a.updatedAt).getTime();
+          const dateB = new Date(b.updatedAt).getTime();
+          return dateB - dateA; // Ordena do mais recente para o mais antigo
+        })
+        .map((leed) => (
+          <Grid item key={leed._id} xs={12} sm={6} md={3}>
+            <LeedCard
+              leed={leed}
+              isNew={isNewLead(leed)} // Passa o valor de isNew para o LeedCard
+              isUpdated={isUpdatedLead(leed)} // Passa o valor de isUpdated para o LeedCard
+              onDelete={() => removeLeed(leed._id)}
+            />
+          </Grid>
+        ))}
+    </>
+  );
+}
+
 function AuthorizedPage() {
   const [leedsList, setLeedsList] = useState<any[]>([]);
   const [oldLeedsList, setOldLeedsList] = useState<any[]>([]); // Estado para armazenar a lista antiga de leads
   const [timeRemaining, setTimeRemaining] = useState(10); // Estado para armazenar o tempo restante até a próxima atualização
   const [autoUpdate, setAutoUpdate] = useState(true); // Estado para controlar a atualização automática
+  const [showOnlyFilled, setShowOnlyFilled] = useState(false); // Estado para controlar a exibição apenas dos leeds que preencheram o formulário
 
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
   const toggleAutoUpdate = () => {
     setAutoUpdate((prevAutoUpdate) => !prevAutoUpdate); // Inverte o estado atual de autoUpdate
+  };
+
+  const toggleShowOnlyFilled = () => {
+    setShowOnlyFilled((prevShowOnlyFilled) => !prevShowOnlyFilled); // Inverte o estado atual de showOnlyFilled
   };
 
   const listLeeds = async () => {
@@ -114,6 +163,10 @@ function AuthorizedPage() {
   const handleRefreshButtonClick = () => {
     listLeeds(); // Chama listLeeds() quando o botão de atualizar é clicado
     setTimeRemaining(10); // Reinicia o tempo restante para a próxima atualização
+  };
+
+  const listFilledLeeds = () => {
+    return leedsList.filter((leed) => leed.selectedOptions.length !== 0);
   };
 
   // Função para determinar se um lead é novo
@@ -183,6 +236,16 @@ function AuthorizedPage() {
                 ? "Desativar Atualização Automática"
                 : "Ativar Atualização Automática"}
             </Button>
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showOnlyFilled}
+                  onChange={toggleShowOnlyFilled}
+                />
+              }
+              label="Exibir apenas leeds que preencheram o formulário"
+            />
           </Stack>
 
           {leedsList.length === 0 ? (
@@ -202,23 +265,28 @@ function AuthorizedPage() {
                 alignItems="center"
                 spacing={2}
               >
-                {leedsList
-                  .sort((a, b) => {
-                    const dateA = new Date(a.updatedAt).getTime();
-                    const dateB = new Date(b.updatedAt).getTime();
-                    return dateB - dateA; // Ordena do mais recente para o mais antigo
-                  })
-                  .map((leed, index) => (
-                    <Grid item key={leed._id} xs={12} sm={6} md={3}>
-                      <LeedCard
-                        leed={leed}
-                        isNew={isNewLead(leed)} // Passa o valor de isNew para o LeedCard
-                        isUpdated={isUpdatedLead(leed)} // Passa o valor de isUpdated para o LeedCard
-                        key={leed._id}
-                        onDelete={() => removeLeed(leed._id)}
-                      />
-                    </Grid>
-                  ))}
+                {/* aqui */}
+                {/* <ListAll
+                  leedsList={leedsList}
+                  isNewLead={isNewLead}
+                  isUpdatedLead={isUpdatedLead}
+                  removeLeed={removeLeed}
+                /> */}
+                {showOnlyFilled ? (
+                  <ListAll
+                    leedsList={listFilledLeeds()}
+                    isNewLead={isNewLead}
+                    isUpdatedLead={isUpdatedLead}
+                    removeLeed={removeLeed}
+                  />
+                ) : (
+                  <ListAll
+                    leedsList={leedsList}
+                    isNewLead={isNewLead}
+                    isUpdatedLead={isUpdatedLead}
+                    removeLeed={removeLeed}
+                  />
+                )}
               </Grid>
             </Box>
           )}
